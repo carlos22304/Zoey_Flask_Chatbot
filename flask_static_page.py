@@ -1,11 +1,11 @@
-
 from flask import Flask, render_template, request, jsonify
+import os
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return render_template('chat.html')
+    return render_template('home.html')
 
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
@@ -23,20 +23,16 @@ def chat():
             response = "I'm not sure about that. Try asking about history, nature, or attractions."
 
         return jsonify({'response': response})
-    
-    # For GET requests, return the chat UI
-    return render_template('chat.html')
 
+    return render_template('chat.html')
 
 @app.route('/health')
 def health():
     return "OK", 200
 
 if __name__ == '__main__':
-   import os
-
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 
 
 
