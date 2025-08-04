@@ -1,96 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>ZOE Chatbot</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      padding: 20px;
-    }
+{% extends "base.html" %}
+<h2 style="text-align: center;">Talk to ZOE</h2>
+<div id="chat-box">
+  <div id="messages"></div>
+  <input type="text" id="user-input" placeholder="Ask ZOE something..." />
+  <button onclick="sendMessage()">Send</button>
+</div>
 
-    #chat-box {
-      border: 1px solid #ccc;
-      background: #fff;
-      padding: 15px;
-      max-width: 500px;
-      margin: 0 auto;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
+<script>
+  function speak(text) {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    synth.speak(utterance);
+  }
 
-    .bubble {
-      max-width: 80%;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 15px;
-      clear: both;
-    }
+  async function sendMessage() {
+    const userInput = document.getElementById('user-input').value;
+    if (!userInput.trim()) return;
 
-    .user {
-      background-color: #d1e7dd;
-      float: right;
-      text-align: right;
-    }
+    const msgBox = document.getElementById('messages');
+    msgBox.innerHTML += `<div class="bubble user"><strong>You:</strong> ${userInput}</div>`;
+    document.getElementById('user-input').value = '';
 
-    .bot {
-      background-color: #f8d7da;
-      float: left;
-      text-align: left;
-    }
+    const response = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: userInput })
+    });
 
-    #messages {
-      min-height: 100px;
-      margin-bottom: 15px;
-    }
+    const data = await response.json();
+    const botReply = data.response;
 
-    #user-input {
-      width: 70%;
-      padding: 10px;
-    }
-
-    button {
-      padding: 10px 15px;
-    }
-  </style>
-</head>
-<body>
-  <h2 style="text-align: center;">Talk to ZOE</h2>
-  <div id="chat-box">
-    <div id="messages"></div>
-    <input type="text" id="user-input" placeholder="Ask ZOE something..." />
-    <button onclick="sendMessage()">Send</button>
-  </div>
-
-  <script>
-    function speak(text) {
-      const synth = window.speechSynthesis;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      synth.speak(utterance);
-    }
-
-    async function sendMessage() {
-      const userInput = document.getElementById('user-input').value;
-      if (!userInput.trim()) return;
-
-      const msgBox = document.getElementById('messages');
-      msgBox.innerHTML += `<div class="bubble user"><strong>You:</strong> ${userInput}</div>`;
-      document.getElementById('user-input').value = '';
-
-      const response = await fetch('/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userInput })
-      });
-
-      const data = await response.json();
-      const botReply = data.response;
-
-      msgBox.innerHTML += `<div class="bubble bot"><strong>ZOE:</strong> ${botReply}</div>`;
-      speak(botReply);
-    }
-  </script>
-</body>
-</html>
+    msgBox.innerHTML += `<div class="bubble bot"><strong>ZOE:</strong> ${botReply}</div>`;
+    speak(botReply);
+  }
+</script>
+{% endblock %}
