@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: flask-static-page
+    env: python
+    buildCommand: ""
+    startCommand: "gunicorn flask_static_page:app"
+    plan: free
