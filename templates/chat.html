@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block content %}
 <h2 style="text-align: center;">Talk to ZOE</h2>
 <div id="chat-box">
   <div id="messages"></div>
@@ -7,32 +8,33 @@
 </div>
 
 <script>
-  function speak(text) {
-    const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    synth.speak(utterance);
-  }
+function speak(text) {
+  const synth = window.speechSynthesis;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  synth.speak(utterance);
+}
 
-  async function sendMessage() {
-    const userInput = document.getElementById('user-input').value;
-    if (!userInput.trim()) return;
+async function sendMessage() {
+  const userInput = document.getElementById('user-input').value;
+  if (!userInput.trim()) return;
 
-    const msgBox = document.getElementById('messages');
-    msgBox.innerHTML += `<div class="bubble user"><strong>You:</strong> ${userInput}</div>`;
-    document.getElementById('user-input').value = '';
+  const msgBox = document.getElementById('messages');
+  msgBox.innerHTML += `<div class="bubble user"><strong>You:</strong> ${userInput}</div>`;
+  document.getElementById('user-input').value = '';
 
-    const response = await fetch('/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: userInput })
-    });
+  const response = await fetch('/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: userInput })
+  });
 
-    const data = await response.json();
-    const botReply = data.response;
+  const data = await response.json();
+  const botReply = data.response;
 
-    msgBox.innerHTML += `<div class="bubble bot"><strong>ZOE:</strong> ${botReply}</div>`;
-    speak(botReply);
-  }
+  msgBox.innerHTML += `<div class="bubble bot"><strong>ZOE:</strong> ${botReply}</div>`;
+  speak(botReply);
+}
 </script>
 {% endblock %}
+
