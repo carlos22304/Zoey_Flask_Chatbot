@@ -23,8 +23,10 @@ def chat():
             response = "I'm not sure about that. Try asking about history, nature, or attractions."
 
         return jsonify({'response': response})
-
+    
+    # For GET requests, return the chat UI
     return render_template('chat.html')
+
 
 @app.route('/health')
 def health():
@@ -35,6 +37,7 @@ if __name__ == '__main__':
 
 port = int(os.environ.get("PORT", 5000))
 app.run(host="0.0.0.0", port=port)
+
 
 
 
